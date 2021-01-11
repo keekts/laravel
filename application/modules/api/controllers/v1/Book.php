@@ -102,4 +102,55 @@ class Book extends REST_Controller {
 		$this->response($this->data);
 	}
 
+	public function upload_post()
+	{
+		$this->load->helper('string');
+
+		//Year in YYYY format.
+		$year = date("Y/m/d");
+
+		//Month in mm format, with leading zeros.
+		$month = date("m");
+		$directory = "uploads/$year";
+
+		//If the directory doesn't already exists.
+		if(!is_dir($directory)){
+    //Create our directory.
+			mkdir($directory, 0777, true);
+		}
+
+
+		$config['upload_path']          = $directory;
+		$config['allowed_types']        = 'gif|jpg|png|jpeg|svg';
+		// $config['max_size']             = 100;
+		// $config['max_width']            = 1024;
+		// $config['max_height']           = 768;
+		$config['file_name'] = random_string('alnum',50);
+
+		$this->load->library('upload', $config);
+
+
+		if (!$this->upload->do_upload('file'))
+		{
+			$this->data['error'] = $this->upload->display_errors();
+		}
+		else
+		{
+			$data = $this->upload->data();
+			$this->data['data'] = $data;
+			//Image Resizing 
+			$config1['source_image'] = $data['full_path'];
+			$config1['create_thumb'] = TRUE;
+			$config1['width'] = 250;
+			$config1['height'] = 300; 
+			$config1['new_image'] =  $directory;//.'/'.$config1['width'].'x'.$config1['height'];
+			$config1['maintain_ratio'] = FALSE;
+
+			$this->load->library('image_lib', $config1); 
+			$this->image_lib->resize();
+		}
+
+		$this->response($this->data);
+	}
+
 }

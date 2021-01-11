@@ -37,3 +37,5 @@ http://localhost/ci-hmvc-rest-api-jwt/index.php/api/v1/profile (get method http)
 }
 
 (Not a complate)
+
+https://stackoverflow.com/questions/19218247/codeigniter-image-resize
