@@ -133,9 +133,7 @@ class Book extends REST_Controller {
 		if (!$this->upload->do_upload('file'))
 		{
 			$this->data['error'] = $this->upload->display_errors();
-		}
-		else
-		{
+		}else{
 			$data = $this->upload->data();
 			$this->data['data'] = $data;
 			//Image Resizing 

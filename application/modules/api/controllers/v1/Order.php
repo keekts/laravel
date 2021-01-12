@@ -3,17 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once APPPATH . '/libraries/REST_Controller.php';
 
-class Welcome extends REST_Controller {
+class Order extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+		
 	}
 
 	public function index_get()
 	{
-		$this->data['message'] = 'API Version 1.0';
-		$this->data['data'] = 'run from /Application/modules/api/controllers/v1/welcome.php';
-		$this->response($this->data);
+		
 	}
 
 }
