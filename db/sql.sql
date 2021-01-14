@@ -9,10 +9,14 @@ create table books(
 	type_id int null,
 	price decimal(16, 2)  default 0,
 	price_cost decimal(16, 2)  default 0,
+	price_discount decimal(16, 2)  default 0,
 	cover varchar(255) null,
 	image varchar(255) null,
 	stock int default 0,
 	star decimal(10,2) default 0,
+	isbn varchar(30) null,
+	author varchar(60) null,
+	detail json null,
 	created_at datetime DEFAULT CURRENT_TIMESTAMP,
 	updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	primary key(id)
@@ -46,6 +50,7 @@ create table customers(
 create table order_status(
 	id int auto_increment,
 	status_name varchar(30) not null,
+	color varchar(10) default '#33F3FF',
 	created_at datetime DEFAULT CURRENT_TIMESTAMP,
 	updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	primary key(id)
@@ -90,6 +95,7 @@ create table users(
 	lastlog datetime null,
 	birthday date null,
 	role varchar(20) default 'User',
+	cover varchar(100) null,
 	created_at datetime DEFAULT CURRENT_TIMESTAMP,
 	updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	primary key(id)

@@ -46,4 +46,13 @@ class Test extends REST_Controller {
 		$data  = array('header'=>$headers,'data'=>$decodedToken);
 		$this->response($data);
 	}
+
+	public function xx_get($value='')
+	{
+		// code...
+		// Get file info
+		$info = mime_content_type('readme.rst'); 
+		$this->data['file'] = $info;
+		$this->response($this->data);
+	}
 }
