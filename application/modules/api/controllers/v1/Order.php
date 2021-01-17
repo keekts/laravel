@@ -12,7 +12,11 @@ class Order extends REST_Controller {
 
 	public function index_get()
 	{
-		
+
 	}
 
+	public function index_post()
+	{
+
+	}
 }

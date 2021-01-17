@@ -23,6 +23,19 @@ class Book extends REST_Controller {
 		}
 
 		$search = trim($this->get('search'));
+
+		$tag = trim($this->get('tag'));
+		
+		if ($tag) {
+			$this->db->like('tag',$tag);
+		}
+
+		$typeId = trim($this->get('type_id'));
+		if ($typeId) {
+			$this->db->like('type_id',$typeId);
+		}
+		
+		
 		if ($search) {
 			$wh["name LIKE '%$search%' OR description LIKE '%$search%'"] = null;
 			$data = $this->books->get_many_by($wh);
@@ -61,7 +74,7 @@ class Book extends REST_Controller {
 		
 		$data = $this->put('book');
 
-		$allowed = ['tag','description','code','name'];
+		$allowed = ['tag','description','code','name','star','type_id','isbn','price','price_cost','price_discount','stock','author','detail'];
 
 		$id = trim($this->put('id'));
 		
