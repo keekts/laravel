@@ -34,6 +34,10 @@ class Book extends REST_Controller {
 		if ($typeId) {
 			$this->db->like('type_id',$typeId);
 		}
+
+		$limit = $this->get('limit') ?? 10;
+		$offset = $this->get('offset') ?? 0;
+		$this->books->limit($limit,$offset);
 		
 		
 		if ($search) {
@@ -61,6 +65,15 @@ class Book extends REST_Controller {
 			$this->data['status'] = false;
 			$this->data['message'] = 'name or code not value !';
 			$this->response($this->data,400);
+		}
+
+		// with upload
+		$upload = $this->uploadImage();
+		if($upload){
+			$imgagePath = $upload['folder']."/".$upload['file_name'];
+			$imgageCover = $upload['folder']."/".$upload['raw_name'].'_thumb'.$upload['file_ext'];
+			$val['cover'] = $imgageCover;
+			$val['image'] = $imgagePath;
 		}
 
 		$id = $this->books->insert($val);
@@ -109,13 +122,26 @@ class Book extends REST_Controller {
 	public function index_delete($id=0)
 	{
 		# delete data by id
-		$this->data['book'] = $this->books->get($id);
+		$book =$this->books->get($id);
+		$this->data['book'] = $book;
+
+		if($book->image) {
+					// remove old image
+			if(file_exists($book->image)) {
+				@unlink($book->image);
+			}
+					// remove book cover
+			if(file_exists($book->cover)) {
+				@unlink($book->cover);
+			}
+		}
+
 		$this->books->delete($id);
 		$this->data['message'] = 'delete success';
 		$this->response($this->data);
 	}
 
-	public function upload_post()
+	public function uploadImage()
 	{
 		$this->load->helper('string');
 
@@ -138,7 +164,7 @@ class Book extends REST_Controller {
 		// $config['max_size']             = 100;
 		// $config['max_width']            = 1024;
 		// $config['max_height']           = 768;
-		$config['file_name'] = random_string('alnum',50);
+		$config['file_name'] = random_string('alnum',30);
 
 		$this->load->library('upload', $config);
 
@@ -146,9 +172,10 @@ class Book extends REST_Controller {
 		if (!$this->upload->do_upload('file'))
 		{
 			$this->data['error'] = $this->upload->display_errors();
+			return null;
 		}else{
 			$data = $this->upload->data();
-			$this->data['data'] = $data;
+
 			//Image Resizing 
 			$config1['source_image'] = $data['full_path'];
 			$config1['create_thumb'] = TRUE;
@@ -156,11 +183,54 @@ class Book extends REST_Controller {
 			$config1['height'] = 300; 
 			$config1['new_image'] =  $directory;//.'/'.$config1['width'].'x'.$config1['height'];
 			$config1['maintain_ratio'] = FALSE;
+			$data['folder'] = $directory;
+			$this->data['data'] = $data;
 
 			$this->load->library('image_lib', $config1); 
 			$this->image_lib->resize();
-		}
 
+			return $data;
+			
+		}
+	}
+
+	public function changeImage_post($value='')
+	{
+		$upload = $this->uploadImage();
+		if($upload) {
+			$id = $this->post('id');
+			$book = $this->books->get($id);
+			if($book) {
+				if($book->image) {
+					// remove old image
+					if(file_exists($book->image)) {
+						@unlink($book->image);
+					}
+					// remove book cover
+					if(file_exists($book->cover)) {
+						@unlink($book->cover);
+					}
+				}
+				// update book cover and image
+				$imgagePath = $upload['folder']."/".$upload['file_name'];
+				$imgageCover = $upload['folder']."/".$upload['raw_name'].'_thumb'.$upload['file_ext'];
+
+				$val = array('cover'=>$imgageCover,'image'=>$imgagePath);
+				$this->books->update($id,$val);
+				$this->data['message'] = 'update image success';
+
+				$this->data['book'] = $this->books->get($id);
+
+				$this->response($this->data);
+			}
+		}else{
+			$this->response($this->data,400);
+		}
+	}
+
+	public function upload_post()
+	{
+		$this->uploadImage();
 		$this->response($this->data);
 	}
 

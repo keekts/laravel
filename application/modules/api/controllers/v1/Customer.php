@@ -13,8 +13,8 @@ class Customer extends REST_Controller {
 
 	public function index_get()
 	{
-		$limit = $this->get('limit');
-		$offset = $this->get('offset');
+		$limit = $this->get('limit') ?? 10;
+		$offset = $this->get('offset') ?? 0;
 		$this->customers->limit($limit,$offset);
 
 		$search = $this->get('search');
@@ -48,6 +48,15 @@ class Customer extends REST_Controller {
 
 	public function index_delete($id)
 	{
+		$this->load->model('orders');
+		$wh = array('customer_id'=>$id);
+		$order = $this->orders->get_by($wh);
+		if($order) {
+			$this->data['status'] = false;
+			$this->data['message'] = 'canot delete';
+			$this->response($this->data);
+		}
+
 		$this->data['customer'] = $this->customers->get($id);
 		$this->customers->delete($id);
 		$this->response($this->data);
