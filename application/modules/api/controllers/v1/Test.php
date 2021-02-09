@@ -14,12 +14,14 @@ class Test extends REST_Controller {
 
 	public function index_get()
 	{
+
 		# create token example
 		$data['status'] = true;
 		$data['message'] = 'success';
 
 		$data['id'] = 1;
 		$data['token'] = AUTHORIZATION::generateToken($data);
+
 
 		$this->response($data);
 	}
