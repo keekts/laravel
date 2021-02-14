@@ -10,7 +10,7 @@ class Auth extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->config('jwt');
+
 	}
 
 	public function index_get()

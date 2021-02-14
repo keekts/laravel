@@ -592,4 +592,4 @@ $config['allow_any_cors_domain'] = true;
 | e.g. $config['allowed_origins'] = ['http://www.example.com', 'https://spa.example.com']
 |
 */
-$config['allowed_cors_origins'] = ['http://localhost:8080','192.168.2.72:8080'];
+$config['allowed_cors_origins'] = ['http://localhost:3000'];

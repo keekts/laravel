@@ -13,46 +13,53 @@ class Booktype extends REST_Controller {
 
 	public function index_get()
 	{
+		$this->Booktypes->order_by('type_name');
 		$this->data['booktypes'] = $this->Booktypes->get_all();
 		$this->response($this->data);
+	}
+
+	private function id($id)
+	{
+		$this->data['booktype'] = $this->Booktypes->get($id);
 	}
 
 	public function index_post()
 	{
 		$val = array(
-			'status_name'=>$this->post('status_name')
+			'type_name'=>$this->post('type_name')
 		);
 
 		$id = $this->Booktypes->insert($val);
-		$this->data['booktype'] = $this->Booktypes->get($id);
+		$this->id($id);
 		$this->response($this->data,201);
 	}
 
 	public function index_put()
 	{
 		$val = array(
-			'status_name'=>$this->put('status_name')
+			'type_name'=>$this->put('type_name')
 		);
 
 		$id = $this->put('id');
 		$this->Booktypes->update($id,$val);
-		$this->data['booktype'] = $this->Booktypes->get($id);
+		$this->id($id);
 		$this->response($this->data);
 	}
 
 	public function index_delete($id)
 	{
 		
-		$this->data['booktype'] = $this->Booktypes->get($id);
+		$this->id($id);
 
 		$this->load->model('books');
 
 		$row = $this->books->get_by(['type_id'=>$id]);
 		if($row){
-			$this->data['message'] = 'Ready Data';
+			$this->data['message'] = 'cannot delete';
 			$this->response($this->data);	
 		}else{
-			$this->data['message'] = 'Delete';
+			$this->data['message'] = 'Deleted';
+			$this->data['status'] = true;
 			$this->Booktypes->delete($id);
 			$this->response($this->data);
 		}
