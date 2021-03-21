@@ -40,3 +40,8 @@ http://localhost/ci-hmvc-rest-api-jwt/index.php/api/v1/profile (get method http)
 https://stackoverflow.com/questions/19218247/codeigniter-image-resize
 
 not https://github.com/dalers/mywind
+
+``` base 
+git rm -r --cached src/.history/
+
+```
