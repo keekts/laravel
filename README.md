@@ -45,3 +45,9 @@ not https://github.com/dalers/mywind
 git rm -r --cached src/.history/
 
 ```
+
+https://davejansen.com/how-to-dump-and-restore-a-mariadb-mysql-database-from-a-docker-container/
+Dump using mysqldump
+docker exec db_container_name mysqldump [--user yourusername] [--password=yourpassword] databasename > /desired/path/to/db.dump
+
+docker exec -i db_container_name mysql [--user yourusername] [--password=yourpassword] databasename < /path/to/db.dump
