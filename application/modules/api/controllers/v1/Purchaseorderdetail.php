@@ -3,12 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once APPPATH . '/libraries/REST_Controller.php';
 
-class Orderdetail extends REST_Controller {
+class Purchaseorderdetail extends REST_Controller {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('orderdetails');
+		$this->load->model('purchaseorderdetails');
 	}
 
 	public function index_get()
@@ -19,7 +19,7 @@ class Orderdetail extends REST_Controller {
 	public function index_post()
 	{
 		$val = $this->post('input');
-		$this->orderdetails->insert($id,$val);
+		$this->purchaseorderdetails->insert($id,$val);
 		$this->response($this->data,201);
 	}
 
@@ -28,16 +28,16 @@ class Orderdetail extends REST_Controller {
 		$val = $this->put('input');
 		$id = $this->put('id');
 
-		$this->orderdetails->update($id,$val);
+		$this->purchaseorderdetails->update($id,$val);
 
-		$this->data['details'] = $this->orderdetails->get($id);
+		$this->data['details'] = $this->purchaseorderdetails->get($id);
 		$this->response($this->data);
 	}
 
 	public function index_delete($id=0)
 	{
 		$this->data['message'] = 'deleted';
-		$this->orderdetails->delete($id);
+		$this->purchaseorderdetails->delete($id);
 		$this->response($this->data);
 	}
 

@@ -3,11 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once APPPATH . '/libraries/REST_Controller.php';
 
-class Order extends REST_Controller {
+class Import extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(['orders','orderdetails']);
+		$this->load->model(['import']);
 	}
 
 	public function index_get()
