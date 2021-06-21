@@ -56,7 +56,7 @@ class User extends REST_Controller {
 	public function index_put()
 	{
 		# update
-		$data = $this->put('user');
+		$data = $this->put('input');
 
 		$allowed = ['fullname','email','password','phone'];
 
@@ -88,6 +88,7 @@ class User extends REST_Controller {
 
 	public function changeEmail_put()
 	{
+		
 	}
 
 	public function index_delete($id)

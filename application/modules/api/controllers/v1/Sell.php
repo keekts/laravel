@@ -14,7 +14,7 @@ class Sell extends REST_Controller {
 	{
 		$id = $this->get('id');
 		if($id > 0) {
-			$this->data['order'] = $this->sells->get($id);
+			$this->data['sell'] = $this->sells->get($id);
 
 			$sql = "select b.name,d.qty,d.price,order_id from books b inner join order_details d on d.book_id=b.id where order_id=$id";
 			$this->data['details'] = $this->db->query($sql)->result();
@@ -31,21 +31,24 @@ class Sell extends REST_Controller {
 
 	public function index_post()
 	{
-
+		$val = $this->post('input');
+		$id = $this->sells->insert($val);
+		$this->data['sell'] = $this->sells->get($id);
+		$this->response($this->data,201);
 	}
 
 	public function index_put()
 	{
-		$val = $this->put('order');
+		$val = $this->put('input');
 		$id = $this->put('id');
 		$this->sells->update($id,$val);
-		$this->data['order'] = $this->sells->get($id);
+		$this->data['sell'] = $this->sells->get($id);
 		$this->response($this->data);
 	}
 
 	public function index_delete($id=0)
 	{
-		$this->sells->delete_by(['order_id'=>$id]);
+		$this->selldetails->delete_by(['sell_id'=>$id]);
 		$this->sells->delete($id);
 		$this->data['message'] = 'deleted';
 		$this->response($this->data);
