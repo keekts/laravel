@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Users extends MY_Model {
+class Employees extends MY_Model {
 
 	public function __construct()
 	{

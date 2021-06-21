@@ -8,7 +8,7 @@ class Purchaseorderdetail extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('purchaseorderdetails');
+		$this->load->model('porderdetails');
 	}
 
 	public function index_get()
@@ -19,7 +19,7 @@ class Purchaseorderdetail extends REST_Controller {
 	public function index_post()
 	{
 		$val = $this->post('input');
-		$this->purchaseorderdetails->insert($id,$val);
+		$this->porderdetails->insert($id,$val);
 		$this->response($this->data,201);
 	}
 
@@ -28,16 +28,16 @@ class Purchaseorderdetail extends REST_Controller {
 		$val = $this->put('input');
 		$id = $this->put('id');
 
-		$this->purchaseorderdetails->update($id,$val);
+		$this->porderdetails->update($id,$val);
 
-		$this->data['details'] = $this->purchaseorderdetails->get($id);
+		$this->data['details'] = $this->porderdetails->get($id);
 		$this->response($this->data);
 	}
 
 	public function index_delete($id=0)
 	{
 		$this->data['message'] = 'deleted';
-		$this->purchaseorderdetails->delete($id);
+		$this->porderdetails->delete($id);
 		$this->response($this->data);
 	}
 
