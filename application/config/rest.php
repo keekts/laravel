@@ -550,7 +550,8 @@ $config['allowed_cors_headers'] = [
   'Accept',
   'Access-Control-Request-Method',
   'Authorization',
-  'authorization'
+  'authorization',
+  'Access-Control-Allow-Origin'
 ];
 
 /*

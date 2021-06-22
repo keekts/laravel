@@ -13,12 +13,14 @@ class Book extends REST_Controller {
 
 	public function index_get()
 	{
-
 		$id = trim($this->get('id'));
 
 		if ($id > 0) {
 			$data = $this->books->get($id);
-			$this->data['results'] = $data;
+			$this->load->model('booktypes');
+			$this->data['book_types'] = $this->booktypes->get_all();
+			
+			$this->data['book'] = $data;
 			$this->response($this->data);
 		}
 
@@ -35,8 +37,8 @@ class Book extends REST_Controller {
 			$this->db->like('type_id',$typeId);
 		}
 
-		$limit = $this->get('limit') ?? 10;
-		$offset = $this->get('offset') ?? 0;
+		$limit = $this->get('limit') ?: 10;
+		$offset = $this->get('offset') ?: 0;
 		$this->books->limit($limit,$offset);
 		
 		
@@ -60,8 +62,9 @@ class Book extends REST_Controller {
 		$val['description'] = trim($this->post('description'));
 		$val['tag'] = trim($this->post('tag'));
 		$val['code'] = trim($this->post('code'));
+		$val['type_id'] = (int) trim($this->post('type_id'));
 
-		if (!$val['name'] || !$val['code']) {
+		if (!$val['name']) {
 			$this->data['status'] = false;
 			$this->data['message'] = 'name or code not value !';
 			$this->response($this->data,400);
@@ -88,7 +91,6 @@ class Book extends REST_Controller {
 		$data = $this->put('book');
 
 		$allowed = ['tag','description','code','name','star','type_id','isbn','price','price_cost','price_discount','stock','author','detail'];
-
 		$id = trim($this->put('id'));
 		
 		if(!$id) {
@@ -96,23 +98,23 @@ class Book extends REST_Controller {
 			$this->response($this->data,400);
 		}
 
-		$book = array_filter(
-			$data,
-			function ($key) use ($allowed) {
-				return in_array($key, $allowed);
-			},
-			ARRAY_FILTER_USE_KEY
-		);
+		// $book = array_filter(
+		// 	$data,
+		// 	function ($key) use ($allowed) {
+		// 		return in_array($key, $allowed);
+		// 	},
+		// 	ARRAY_FILTER_USE_KEY
+		// );
 
-		if (!$book['name'] || !$book['code']) {
+		if (!$data['name']) {
 			$this->data['status'] = false;
 			$this->data['message'] = 'name or code not value !';
-			$this->response($this->data,400);
+			$this->response($this->data);
 		}
 
-		$id = trim($this->put('id'));
 
-		$this->books->update($id,$book);
+
+		$this->books->update($id,$data);
 		$this->data['book'] = $this->books->get($id);
 		$this->data['message'] = 'update data success';
 		$this->response($this->data);
@@ -184,7 +186,7 @@ class Book extends REST_Controller {
 			$config1['new_image'] =  $directory;//.'/'.$config1['width'].'x'.$config1['height'];
 			$config1['maintain_ratio'] = FALSE;
 			$data['folder'] = $directory;
-			$this->data['data'] = $data;
+			$this->data['image'] = $data;
 
 			$this->load->library('image_lib', $config1); 
 			$this->image_lib->resize();
