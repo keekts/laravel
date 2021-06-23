@@ -23,7 +23,6 @@ class Welcome extends CI_Controller {
 		// $this->load->helper('url');
 		$this->load->view('welcome_message');
 
-
 		// echo $_SERVER['REQUEST_URI'];
 
 		// echo '<br>'. base_url('');

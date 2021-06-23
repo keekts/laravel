@@ -56,7 +56,7 @@ class Booktype extends REST_Controller {
 		$row = $this->books->get_by(['type_id'=>$id]);
 		if($row){
 			$this->data['message'] = 'cannot delete';
-			$this->response($this->data);	
+			$this->response($this->data,400);	
 		}else{
 			$this->data['message'] = 'Deleted';
 			$this->data['status'] = true;

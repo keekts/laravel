@@ -40,6 +40,9 @@ class Book extends REST_Controller {
 		$limit = $this->get('limit') ?: 10;
 		$offset = $this->get('offset') ?: 0;
 		$this->books->limit($limit,$offset);
+
+
+		$this->data['total'] = $this->books->count_all();
 		
 		
 		if ($search) {
@@ -48,10 +51,20 @@ class Book extends REST_Controller {
 			$this->data['results'] = $data;
 			$this->response($this->data);
 		}
+		$this->books->limit($limit,$offset);
 
 		$data = $this->books->get_all();
 
 		$this->data['results'] = $data;
+		$this->response($this->data);
+	}
+
+	public function qtyRow_get()
+	{
+		$limit = $this->get('limit') ?: 10;
+		$this->books->limit($limit);
+		$this->books->order_by('qty');
+		$this->data['books'] =$this->books->get_all();
 		$this->response($this->data);
 	}
 
@@ -217,7 +230,7 @@ class Book extends REST_Controller {
 				$imgagePath = $upload['folder']."/".$upload['file_name'];
 				$imgageCover = $upload['folder']."/".$upload['raw_name'].'_thumb'.$upload['file_ext'];
 
-				$val = array('cover'=>$imgageCover,'image'=>$imgagePath);
+				$val = array('cover'=>$imgagePath,'image'=>$imgagePath);
 				$this->books->update($id,$val);
 				$this->data['message'] = 'update image success';
 

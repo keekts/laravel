@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Orderdetails extends MY_Model {
+class Porderdetails extends MY_Model {
 
 	public $_table = 'purchaser_order_details';
 

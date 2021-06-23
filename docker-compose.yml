@@ -1,15 +1,15 @@
 version: "3"
 services:
-    web:
-        image: tutum/apache-php
-        environment:
-            - ALLOW_OVERRIDE=true
-        ports:
-            - "80:80"
-        links:
-            - db
-        volumes:
-            - ./:/app
+    # web:
+    #     image: tutum/apache-php
+    #     environment:
+    #         - ALLOW_OVERRIDE=true
+    #     ports:
+    #         - "80:80"
+    #     links:
+    #         - db
+    #     volumes:
+    #         - ./:/app
     db:
         image: 'mariadb:10.4'
         restart: always
@@ -25,16 +25,38 @@ services:
         networks:
             - default
         command: mysqld --default-authentication-plugin=mysql_native_password
+    # PHP service
+    app:
+        build: .
+        container_name: php-app
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - default
+    # Nginx service
+    nginx:
+        image: nginx:alpine
+        container_name: php-nginx
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - default
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         links: 
             - db:db
         ports:
-            - 8000:80
+            - 8001:80
         environment:
             MYSQL_USER: root
             MYSQL_PASSWORD: root
             MYSQL_ROOT_PASSWORD: root
+        networks: 
+            - default
 volumes:
     persistent:
     mariadb-data:
