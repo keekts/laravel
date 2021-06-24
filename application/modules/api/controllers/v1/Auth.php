@@ -18,16 +18,17 @@ class Auth extends REST_Controller {
 		$data['status'] = true;
 		$data['message'] = 'success';
 
-		$data['id'] = 1;
-		$data['token'] = AUTHORIZATION::generateToken($data);
+		// $data['id'] = 1;
+		// $data['token'] = AUTHORIZATION::generateToken($data);
+		$this->data['user'] = $this->getToken();
 
-		$this->response($data);
+		$this->response($this->data);
 	}
 
 	public function index_post()
 	{
 		$this->load->model('users');
-		$email = $this->post('email');
+		$email = $this->post('username');
 		$pwd = $this->post('password');
 
 
@@ -41,17 +42,17 @@ class Auth extends REST_Controller {
 			$this->response($this->data,204);
 		}
 
-		$row = $this->users->get_by(['email'=>$email]);
+		$row = $this->users->get_by(['username'=>$email]);
 
 		if($row) {
-			if($row->block==false) {
+			// if($row->block==false) {
 				if(password_verify($pwd, $row->password)) {
 					$data['id'] = $row->id;
 					$data['email'] = $row->email;
-					$data['fullname'] = $row->fullname;
 
-					$this->data['user'] = $data;
-					$this->data['token'] = AUTHORIZATION::generateToken($data);
+					$this->data['user'] = $row;
+					$row->password = null;
+					$this->data['token'] = AUTHORIZATION::generateToken($row);
 					$this->response($this->data);
 				}else{
 					$this->data['message'] = 'password or not found';
@@ -61,10 +62,10 @@ class Auth extends REST_Controller {
 				$this->data['message'] = 'user is blocked';
 				$this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
 			}
-		}else{
-			$this->data['message'] = 'password or email not found';
-			$this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
-		}
+		// }else{
+		// 	$this->data['message'] = 'password or email not found';
+		// 	$this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
+		// }
 
 	}
 

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once APPPATH . '/libraries/REST_Controller.php';
 
-class Purchaseorderdetail extends REST_Controller {
+class Porderdetail extends REST_Controller {
 
 	public function __construct()
 	{
@@ -19,7 +19,15 @@ class Purchaseorderdetail extends REST_Controller {
 	public function index_post()
 	{
 		$val = $this->post('input');
-		$this->porderdetails->insert($id,$val);
+		$id = $this->porderdetails->insert($val);
+		$this->data['details'] = $this->porderdetails->get($id);
+		$this->response($this->data,201);
+	}
+
+	public function inserts_post()
+	{
+		$val = $this->post('input');
+		$this->porderdetails->insert_many($val);
 		$this->response($this->data,201);
 	}
 

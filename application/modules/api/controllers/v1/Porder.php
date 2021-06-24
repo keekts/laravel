@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 require_once APPPATH . '/libraries/REST_Controller.php';
 
-class Purchaseorder extends REST_Controller
+class Porder extends REST_Controller
 {
     public function __construct()
     {
@@ -15,9 +15,13 @@ class Purchaseorder extends REST_Controller
     {
         $id = $this->get('id');
         if ($id > 0) {
-            $this->data['order'] = $this->porders->get($id);
+            $this->load->model('suppliers');
+            $porder = $this->porders->get($id);
+            $this->data['porder'] = $porder;
+            $this->data['supplier'] = $this->suppliers->get($porder->supplier_id);
 
-            $sql = "select b.name,d.qty,d.price,order_id from books b inner join order_details d on d.book_id=b.id where order_id=$id";
+            $sql = "select b.name,b.cover,d.* from books b inner join 
+             purchaser_order_details d on d.book_id=b.id where purchaser_order_id=$id";
             $this->data['details'] = $this->db->query($sql)->result();
             $this->response($this->data);
         }
@@ -25,8 +29,9 @@ class Purchaseorder extends REST_Controller
         $limit = $this->get('limit') ?? 10;
         $offset = $this->get('offset') ?? 0;
 
+        $this->porders->order_by('id','desc');
         $this->porders->limit($limit, $offset);
-        $this->data['purchaseorders'] = $this->porders->get_all();
+        $this->data['porders'] = $this->porders->get_all();
         $this->response($this->data);
     }
 
