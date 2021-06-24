@@ -24,6 +24,11 @@ class User extends REST_Controller
             $this->response($this->data);
         }
 
+        $search = $this->get('search');
+		if ($search) {
+			$this->db->where(" first LIKE '%$search%' OR phone LIKE '%$search%' ");
+		}
+
         $this->data['users'] = $this->users->get_all();
         $this->response($this->data);
     }
@@ -43,7 +48,7 @@ class User extends REST_Controller
             'auther' => $this->post('auther') ?: 'User',
         );
 
-        if (strlen($val['password']) < 8) {
+        if (strlen($val['password']) < 4) {
             $this->data['message'] = 'password min legnth';
             $this->response($this->data, 400);
         }
@@ -72,7 +77,7 @@ class User extends REST_Controller
         # update
         $data = $this->put('input');
 
-        $allowed = ['first', 'last', 'age', 'address', 'gender', 'auther', 'email', 'password', 'phone'];
+        $allowed = ['username','first', 'last', 'age', 'address', 'gender', 'auther', 'email', 'password', 'phone'];
 
         $id = trim($this->put('id'));
 
@@ -91,7 +96,7 @@ class User extends REST_Controller
 
         if (array_key_exists('password', $user)) {
             // encode password
-            if (strlen($user['password']) > 7) {
+            if (strlen($user['password']) > 3) {
                 $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
             }
         }

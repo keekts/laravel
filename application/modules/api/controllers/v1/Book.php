@@ -49,6 +49,7 @@ class Book extends REST_Controller {
 			$wh["name LIKE '%$search%' OR description LIKE '%$search%'"] = null;
 			$data = $this->books->get_many_by($wh);
 			$this->data['results'] = $data;
+			$this->data['s'] = $wh;
 			$this->response($this->data);
 		}
 		$this->books->limit($limit,$offset);
