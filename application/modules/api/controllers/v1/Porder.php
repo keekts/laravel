@@ -26,12 +26,21 @@ class Porder extends REST_Controller
             $this->response($this->data);
         }
 
-        $limit = $this->get('limit') ?? 10;
-        $offset = $this->get('offset') ?? 0;
+        $limit = $this->get('limit') ?: 10;
+        $offset = $this->get('offset') ?: 0;
 
-        $this->porders->order_by('id','desc');
-        $this->porders->limit($limit, $offset);
-        $this->data['porders'] = $this->porders->get_all();
+        // $this->db->order_by('p.id','desc');
+        // $this->db->limit($limit, $offset);
+        $searchSql = '';
+        $search = $this->get('search');
+        if($search) {
+            $searchSql = " where p.id LIKE '%$search%' ";
+        }
+
+        $sqlpOrder = "select e.first,e.last,p.* from purchaser_orders p left join
+         employees e on e.id=p.emp_id  $searchSql  order by p.id desc limit $offset,$limit 
+        ";
+        $this->data['porders'] = $this->db->query($sqlpOrder)->result();
         $this->response($this->data);
     }
 

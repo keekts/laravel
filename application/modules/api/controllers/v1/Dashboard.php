@@ -19,6 +19,12 @@ class Dashboard extends REST_Controller
         $this->data['books'] = $this->books->count_all();
         $this->data['sells'] = $this->sells->count_all();
         $this->data['selldetails'] = $this->selldetails->count_all();
+
+        // order recent
+        $sql = "select s.*,c.first,c.last from sells s 
+         inner join customers c on s.customer_id=c.id where s.status='order' 
+        order by sell_date desc  limit 5 ";
+        $this->data['recent_orders'] = $this->db->query($sql)->result();
         $this->response($this->data);
     }
 

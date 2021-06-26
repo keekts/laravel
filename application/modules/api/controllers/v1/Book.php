@@ -89,7 +89,7 @@ class Book extends REST_Controller {
 		if($upload){
 			$imgagePath = $upload['folder']."/".$upload['file_name'];
 			$imgageCover = $upload['folder']."/".$upload['raw_name'].'_thumb'.$upload['file_ext'];
-			$val['cover'] = $imgageCover;
+			$val['cover'] = $imgagePath;
 			$val['image'] = $imgagePath;
 		}
 
