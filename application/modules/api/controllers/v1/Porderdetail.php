@@ -38,7 +38,7 @@ class Porderdetail extends REST_Controller {
 
 		$this->porderdetails->update($id,$val);
 
-		$this->data['details'] = $this->porderdetails->get($id);
+		$this->data['detail'] = $this->porderdetails->get($id);
 		$this->response($this->data);
 	}
 
