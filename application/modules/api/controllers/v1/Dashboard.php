@@ -25,6 +25,11 @@ class Dashboard extends REST_Controller
          inner join customers c on s.customer_id=c.id where s.status='order' 
         order by sell_date desc  limit 5 ";
         $this->data['recent_orders'] = $this->db->query($sql)->result();
+
+        $sqlSellChart = "SELECT count(id)as total,date_format(sell_date,'%m/%Y') as date FROM `sells` GROUP by date_format(sell_date,'%Y-%m') 
+         order by sell_date desc limit 12";
+        $this->data['sell_data_chart'] = $this->db->query($sqlSellChart)->result();
+
         $this->response($this->data);
     }
 

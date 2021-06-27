@@ -69,6 +69,11 @@ class Auth extends REST_Controller {
 
 	}
 
+	public function logout_post()
+	{
+		# code...
+	}
+
 }
 
 /* End of file Auth.php */

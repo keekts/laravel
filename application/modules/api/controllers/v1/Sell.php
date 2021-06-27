@@ -31,19 +31,44 @@ class Sell extends REST_Controller
         $limit = $this->get('limit') ?? 10;
         $offset = $this->get('offset') ?? 0;
 
-				$search  = $this->get('search');
-				$searchSql = '';
-				if($search) {
-					$searchSql = " where s.id like '$search%' or c.first like '%$search%' ";
-				}
+        $search = $this->get('search');
+        $searchSql = '';
+        if ($search) {
+            $searchSql = " where s.id like '$search%' or c.first like '%$search%' ";
+        }
 
-				$sql = "select s.*,c.first,c.last from sells s 
-				inner join customers c on s.customer_id=c.id $searchSql   
+        $sql = "select s.*,c.first,c.last from sells s
+				inner join customers c on s.customer_id=c.id $searchSql
 			 order by sell_date desc  limit $offset,$limit ";
         $this->data['sells'] = $this->db->query($sql)->result();
         $this->data['total'] = $this->sells->count_all();
 
         $this->response($this->data);
+    }
+
+    public function status_get()
+    {
+
+        $limit = $this->get('limit') ?? 10;
+        $offset = $this->get('offset') ?? 0;
+        $status = $this->get('status') ?? 'order';
+
+        $search = $this->get('search');
+        $searchSql = '';
+        if ($search) {
+            $searchSql = " where s.id like '$search%' or c.first like '%$search%' and (status='$status') ";
+        }else{
+            $searchSql = " where status='$status'";
+        }
+
+        $sql = "select s.*,c.first,c.last from sells s
+				inner join customers c on s.customer_id=c.id $searchSql
+			 order by sell_date desc  limit $offset,$limit ";
+        $this->data['sells'] = $this->db->query($sql)->result();
+        $this->data['total'] = $this->sells->count_by('status',$status);
+
+        $this->response($this->data);
+
     }
 
     public function index_post()
