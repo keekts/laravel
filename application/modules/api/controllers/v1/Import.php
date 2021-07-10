@@ -46,7 +46,8 @@ class Import extends REST_Controller {
 
 		$bookid = $this->post('book_id');
 		$qty = (int) $val['qty'];
-		$sqlBook = "update books set qty=(qty+$qty) where id=$bookid";
+		$price = $val['price'];
+		$sqlBook = "update books set qty=(qty+$qty) , price_cost=$price where id=$bookid";
 
 		$purchaser_detail_id  = $val['purchaser_detail_id'];
 		$sqlUpdatePdetail = "update purchaser_order_details set post_to_stock=$qty 

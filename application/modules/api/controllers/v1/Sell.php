@@ -56,16 +56,16 @@ class Sell extends REST_Controller
         $search = $this->get('search');
         $searchSql = '';
         if ($search) {
-            $searchSql = " where s.id like '$search%' or c.first like '%$search%' and (status='$status') ";
-        }else{
-            $searchSql = " where status='$status'";
+            $searchSql = " where s.id like '$search%' or c.first like '%$search%' and (s.status='$status') ";
+        } else {
+            $searchSql = " where s.status='$status'";
         }
 
         $sql = "select s.*,c.first,c.last from sells s
 				inner join customers c on s.customer_id=c.id $searchSql
 			 order by sell_date desc  limit $offset,$limit ";
         $this->data['sells'] = $this->db->query($sql)->result();
-        $this->data['total'] = $this->sells->count_by('status',$status);
+        $this->data['total'] = $this->sells->count_by('status', $status);
 
         $this->response($this->data);
 
@@ -93,6 +93,88 @@ class Sell extends REST_Controller
         $this->selldetails->delete_by(['sell_id' => $id]);
         $this->sells->delete($id);
         $this->data['message'] = 'deleted';
+        $this->response($this->data);
+    }
+
+    public function report_get()
+    {
+        $date = $this->get('date') ?? Date('Y-m-d');
+
+        $mode = $this->get('mode') ?? 'day';
+
+        $dayR = explode('-', $date);
+
+        $month = $dayR[0] . '-' . $dayR[1];
+        $year = $dayR[0];
+
+        $sqlDay = "select sum(d.price) as total, sum(b.price_cost) as cost
+         from sell_details d inner join sells  s on s.id=d.sell_id
+         inner join books b on b.id=d.book_id
+           where date_format(sell_date,'%Y-%m-%d')='$date' and s.status='sell'";
+
+        $sqlMonth = "select sum(d.price) as total, sum(b.price_cost) as cost
+        from sell_details d inner join sells  s on s.id=d.sell_id
+         inner join books b on b.id=d.book_id
+          where date_format(sell_date,'%Y-%m')='$month' and s.status='sell'";
+
+        $sqlYear = "select sum(d.price) as total, sum(b.price_cost) as cost
+        from sell_details d inner join sells  s on s.id=d.sell_id
+         inner join books b on b.id=d.book_id
+          where date_format(sell_date,'%Y')='$year' and s.status='sell'";
+
+        $_d = array(
+            'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m-%d')" => $date]),
+            'detail' => $this->db->query($sqlDay)->row(),
+        );
+
+        $_m = array(
+            'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m')" => $month]),
+            'total' => $this->db->query($sqlMonth)->row(),
+        );
+
+        $_y = array(
+            'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y')" => $year]),
+            'total' => $this->db->query($sqlYear)->row(),
+        );
+
+        $this->data['items'] = [$_d,$_m,$_y];
+
+        $this->response($this->data);
+    }
+
+    public function reportItems_get()
+    {
+
+        $date = $this->get('date') ?? Date('Y-m-d');
+
+        $mode = $this->get('mode') ?? 'day';
+
+        $dayR = explode('-', $date);
+
+        $month = $dayR[0] . '-' . $dayR[1];
+        $year = $dayR[0];
+
+        switch ($mode) {
+            case 'day':
+                $wh = "date_format(sell_date,'%Y-%m-%d')='$date'";
+                break;
+            case 'month':
+                $wh = "date_format(sell_date,'%Y-%m')='$month'";
+                break;
+            case 'year':
+                $wh = "date_format(sell_date,'%Y')='$year'";
+                break;
+            default:
+                $wh = "date_format(sell_date,'%Y-%m-%d')='$date'";
+                break;
+        }
+
+        $sql = "select s.*,c.first,c.phone from sells s inner join customers c on c.id=s.customer_id where $wh  and s.status='sell'";
+
+        $this->data['sells'] = $this->db->query($sql)->result();
+
+        $this->data['sql'] = $sql;
+
         $this->response($this->data);
     }
 
