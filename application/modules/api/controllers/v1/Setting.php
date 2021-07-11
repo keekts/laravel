@@ -19,6 +19,8 @@ class Setting extends REST_Controller
         $this->data['users'] = $this->users->count_all();
         $this->data['porders'] = $this->porders->count_all();
         $this->data['imports'] = $this->imports->count_all();
+        $sql = "select count(id) as count, date_format(purchaser_date,'%m/%Y') as date from purchaser_orders group by date_format(purchaser_date,'%m/%Y') limit 12";
+        $this->data['chart_porder'] = $this->db->query($sql)->result();
         $this->response($this->data);
     }
 

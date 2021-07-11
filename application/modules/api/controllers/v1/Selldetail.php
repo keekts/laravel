@@ -93,4 +93,17 @@ class Selldetail extends REST_Controller
         $this->response($this->data);
     }
 
+    public function downQtyBook_post()
+    {
+        $items = $this->post('items');
+        foreach ($items as $detail) {
+            $qty = $detail['qty'];
+            $book_id = $detail['book_id'];
+            $sql = "update books set qty=qty-$qty where id=$book_id";
+            $this->db->query($sql);
+        }
+        $this->data['count'] = count($items);
+        $this->response($this->data);
+    }
+
 }

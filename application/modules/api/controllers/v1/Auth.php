@@ -52,18 +52,28 @@ class Auth extends REST_Controller
                 $row->password = null;
                 $this->data['token'] = AUTHORIZATION::generateToken($row);
                 $this->response($this->data);
-            } else {
-                $this->data['message'] = 'password or not found';
-                $this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
             }
         } else {
-            $this->data['message'] = 'user is blocked';
+
+            $this->load->model('customers');
+
+            $cus = $this->customers->get_by('email', $email);
+            if ($cus) {
+                $this->data['user'] = $cus;
+                if (password_verify($pwd, $cus->password)) {
+                    $cus->password = null;
+                    $cus->auther = 'customer';
+                    $this->data['token'] = AUTHORIZATION::generateToken($cus);
+                    $this->response($this->data);
+                } else {
+                    $this->data['message'] = 'password or email not found';
+                    $this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
+                }
+            } else {
+                $this->data['message'] = 'user is blocked';
+            }
             $this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
         }
-        // }else{
-        //     $this->data['message'] = 'password or email not found';
-        //     $this->response($this->data, REST_Controller::HTTP_UNAUTHORIZED);
-        // }
 
     }
 

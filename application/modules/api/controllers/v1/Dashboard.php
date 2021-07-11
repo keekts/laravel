@@ -30,6 +30,11 @@ class Dashboard extends REST_Controller
          order by sell_date desc limit 12";
         $this->data['sell_data_chart'] = $this->db->query($sqlSellChart)->result();
 
+        $sqlChrtBook = "select type_name,
+        (select count(d.id) from sell_details d inner join books b on b.id=d.book_id where type_id=book_types.id) as count 
+         from book_types" ;
+        $this->data['chart_book'] = $this->db->query($sqlChrtBook)->result();
+
         $this->response($this->data);
     }
 

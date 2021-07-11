@@ -123,18 +123,21 @@ class Sell extends REST_Controller
           where date_format(sell_date,'%Y')='$year' and s.status='sell'";
 
         $_d = array(
+            'on_time'=>$dayR[2].'/'.$dayR[1].'/'.$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m-%d')" => $date]),
             'detail' => $this->db->query($sqlDay)->row(),
         );
 
         $_m = array(
+            'on_time'=>$dayR[1].'/'.$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m')" => $month]),
-            'total' => $this->db->query($sqlMonth)->row(),
+            'detail' => $this->db->query($sqlMonth)->row(),
         );
 
         $_y = array(
+            'on_time'=>$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y')" => $year]),
-            'total' => $this->db->query($sqlYear)->row(),
+            'detail' => $this->db->query($sqlYear)->row(),
         );
 
         $this->data['items'] = [$_d,$_m,$_y];
@@ -169,11 +172,12 @@ class Sell extends REST_Controller
                 break;
         }
 
-        $sql = "select s.*,c.first,c.phone from sells s inner join customers c on c.id=s.customer_id where $wh  and s.status='sell'";
+        $sql = "select s.*,c.first,c.phone,c.last,(select sum(price) from sell_details where sell_id=s.id ) as total 
+         from sells s inner join customers c on c.id=s.customer_id where $wh  and s.status='sell' order by s.id desc";
 
         $this->data['sells'] = $this->db->query($sql)->result();
 
-        $this->data['sql'] = $sql;
+        // $this->data['sql'] = $sql;
 
         $this->response($this->data);
     }

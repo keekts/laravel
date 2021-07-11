@@ -60,6 +60,20 @@ class Book extends REST_Controller {
 		$this->response($this->data);
 	}
 
+	public function id_get()
+	{
+		$id = $this->get('id');
+		$book = $this->books->get($id);
+		$this->data['book'] = $book;
+		$this->books->limit(8);
+		$this->data['books'] = $this->books->get_many_by(['type_id'=>$book->type_id,'id !='=>$id]);
+		if(count($this->data['books']) < 1) {
+			$this->books->order_by('RAND()');
+			$this->data['books'] = $this->books->get_all();
+		}
+		$this->response($this->data);
+	}
+
 	public function qtyRow_get()
 	{
 		$limit = $this->get('limit') ?: 10;
