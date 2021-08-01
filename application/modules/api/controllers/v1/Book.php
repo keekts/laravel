@@ -13,6 +13,9 @@ class Book extends REST_Controller {
 
 	public function index_get()
 	{
+		$limit = $this->get('limit') ?: 10;
+		$offset = $this->get('offset') ?: 0;
+
 		$id = trim($this->get('id'));
 
 		if ($id > 0) {
@@ -36,12 +39,7 @@ class Book extends REST_Controller {
 		if ($typeId) {
 			$this->db->like('type_id',$typeId);
 		}
-
-		$limit = $this->get('limit') ?: 10;
-		$offset = $this->get('offset') ?: 0;
 		$this->books->limit($limit,$offset);
-
-
 		$this->data['total'] = $this->books->count_all();
 		
 		
@@ -50,6 +48,8 @@ class Book extends REST_Controller {
 			$data = $this->books->get_many_by($wh);
 			$this->data['results'] = $data;
 			$this->data['s'] = $wh;
+			$this->books->limit($limit,$offset);
+			$this->data['total'] = $this->books->count_by($wh);
 			$this->response($this->data);
 		}
 		$this->books->limit($limit,$offset);
@@ -90,6 +90,8 @@ class Book extends REST_Controller {
 		$val['description'] = trim($this->post('description'));
 		$val['tag'] = trim($this->post('tag'));
 		$val['code'] = trim($this->post('code'));
+		$val['price'] = trim($this->post('price'));
+		$val['price_cost'] = trim($this->post('price_cost'));
 		$val['type_id'] = (int) trim($this->post('type_id'));
 
 		if (!$val['name']) {
@@ -155,6 +157,17 @@ class Book extends REST_Controller {
 		$book =$this->books->get($id);
 		$this->data['book'] = $book;
 
+		$this->load->model(['selldetails','porderdetails']);
+
+		$sell = $this->selldetails->count_by('book_id',$id);
+		$porder = $this->porderdetails->count_by('book_id',$id);
+		if($sell > 0 || $porder > 0){
+			$this->data['status'] = false;
+			$this->data['message'] = 'cannot delete';
+			$this->response($this->data,400);
+		}
+		
+
 		if($book->image) {
 					// remove old image
 			if(file_exists($book->image)) {
@@ -166,6 +179,7 @@ class Book extends REST_Controller {
 			}
 		}
 
+		$this->data['status'] = true;
 		$this->books->delete($id);
 		$this->data['message'] = 'delete success';
 		$this->response($this->data);
