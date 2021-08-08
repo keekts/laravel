@@ -123,18 +123,21 @@ class Sell extends REST_Controller
           where date_format(sell_date,'%Y')='$year' and s.status='sell'";
 
         $_d = array(
+            'report'=>'reportDay',
             'on_time'=>$dayR[2].'/'.$dayR[1].'/'.$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m-%d')" => $date]),
             'detail' => $this->db->query($sqlDay)->row(),
         );
 
         $_m = array(
+            'report'=>'reportMonth',
             'on_time'=>$dayR[1].'/'.$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y-%m')" => $month]),
             'detail' => $this->db->query($sqlMonth)->row(),
         );
 
         $_y = array(
+            'report'=>'reportYear',
             'on_time'=>$year,
             'count' => $this->sells->count_by(['status' => 'sell', "date_format(sell_date,'%Y')" => $year]),
             'detail' => $this->db->query($sqlYear)->row(),
